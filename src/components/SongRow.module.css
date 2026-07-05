@@ -1,0 +1,66 @@
+.item {
+  list-style: none;
+}
+
+.song {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  margin-bottom: 10px;
+  text-decoration: none;
+  color: var(--text);
+  background: var(--card);
+  transition: background 0.15s, border-color 0.15s, transform 0.08s;
+}
+
+.song:hover {
+  background: var(--card-hover);
+  border-color: #333844;
+  transform: translateY(-1px);
+}
+
+.song:active {
+  transform: translateY(0);
+}
+
+.num {
+  flex: 0 0 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.title {
+  flex: 1;
+  font-size: 16px;
+  font-weight: 600;
+  min-width: 0;
+}
+
+.ago {
+  flex: 0 0 auto;
+  font-size: 12px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.dur {
+  flex: 0 0 auto;
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--accent);
+  background: var(--accent-soft);
+  padding: 3px 8px;
+  border-radius: 7px;
+}

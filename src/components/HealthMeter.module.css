@@ -1,0 +1,35 @@
+.meter {
+  margin: 4px 0 24px;
+}
+
+.bar {
+  height: 12px;
+  border-radius: 999px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+
+.fill {
+  display: block;
+  height: 100%;
+  width: 0%;
+  border-radius: 999px;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1), background 0.4s;
+}
+
+.labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.labels b {
+  color: var(--done);
+}
+
+.attn {
+  color: var(--h-red) !important;
+}

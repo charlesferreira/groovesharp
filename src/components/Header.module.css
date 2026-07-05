@@ -1,0 +1,26 @@
+.header {
+  margin-bottom: 28px;
+}
+
+.eyebrow {
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.title {
+  font-size: 34px;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.sub {
+  color: var(--muted);
+  margin-top: 10px;
+  font-size: 15px;
+  line-height: 1.5;
+}

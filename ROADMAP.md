@@ -17,7 +17,7 @@ instalável no celular (PWA) e publicada no GitHub Pages.
 
 ## Fases
 
-- [ ] **F0 — Fundação**: migrar o protótipo para React/TS com paridade de
+- [x] **F0 — Fundação**: migrar o protótipo para React/TS com paridade de
   funcionalidades (lista, saúde por música, avaliação, ordenação, busca, escala
   de tempo, simulação, painel de opções). Testes da lógica de saúde.
 - [ ] **F1 — Biblioteca editável + vários setlists**: criar/renomear/excluir
