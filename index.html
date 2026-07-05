@@ -444,12 +444,35 @@
     const RATING_LABEL = { solid: "Mandei bem", ok: "Foi ok", shaky: "Travei" };
 
     // ---- datas ----
-    const TODAY = new Date(); TODAY.setHours(0, 0, 0, 0);
+    // modo simulação: ?sim=30 finge que passaram 30 dias (só pra testar o decaimento).
+    // No console: simular(30) recarrega com o offset; simular(0) volta ao normal.
+    const SIM_DAYS = parseInt(new URLSearchParams(location.search).get("sim"), 10) || 0;
+    window.simular = (d) => {
+      const u = new URL(location.href);
+      if (d) u.searchParams.set("sim", d); else u.searchParams.delete("sim");
+      location.href = u.toString();
+    };
+
+    // REAL_TODAY = data de verdade (usada pra GRAVAR); TODAY = data vista (com o offset da simulação).
+    // Escrever sempre com REAL_TODAY garante que simular nunca corrompe os dados.
+    const REAL_TODAY = new Date(); REAL_TODAY.setHours(0, 0, 0, 0);
+    const TODAY = new Date(REAL_TODAY);
+    if (SIM_DAYS) {
+      TODAY.setDate(TODAY.getDate() + SIM_DAYS);
+      const badge = document.createElement("div");
+      badge.textContent = "⏱ simulando +" + SIM_DAYS + " dias — clique pra sair";
+      badge.style.cssText =
+        "position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:100;" +
+        "background:#ffb020;color:#0f1115;font:600 13px/1 -apple-system,sans-serif;" +
+        "padding:10px 16px;border-radius:999px;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.4)";
+      badge.onclick = () => window.simular(0);
+      document.body.appendChild(badge);
+    }
     const ymd = (d) =>
       d.getFullYear() + "-" +
       String(d.getMonth() + 1).padStart(2, "0") + "-" +
       String(d.getDate()).padStart(2, "0");
-    const todayStr = () => ymd(TODAY);
+    const todayStr = () => ymd(REAL_TODAY);
     function daysSince(str) {
       const [y, m, d] = str.split("-").map(Number);
       const dt = new Date(y, m - 1, d); dt.setHours(0, 0, 0, 0);
@@ -467,7 +490,8 @@
     function health(entry) {
       if (!entry) return null;
       const hl = HALF_LIFE[entry.rating] || 14;
-      return 100 * Math.pow(0.5, daysSince(entry.last) / hl);
+      const h = 100 * Math.pow(0.5, daysSince(entry.last) / hl);
+      return Math.max(0, Math.min(100, h)); // nunca abaixo de 0 nem acima de 100
     }
     function healthClass(h) {
       if (h == null) return "h-n";
