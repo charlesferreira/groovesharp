@@ -15,6 +15,11 @@
       --muted: #8b909a;
       --line: #262a33;
       --done: #3ddc84;
+      /* cores de saúde */
+      --h-green: #3ddc84;
+      --h-amber: #ffb020;
+      --h-red: #ff5c5c;
+      --h-none: #454b57;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -57,6 +62,7 @@
       color: var(--muted);
       margin-top: 10px;
       font-size: 15px;
+      line-height: 1.5;
     }
 
     .controls {
@@ -125,12 +131,31 @@
       color: var(--muted);
     }
 
-    .progress {
-      font-size: 13px;
-      color: var(--muted);
-      white-space: nowrap;
+    /* toggle de ordenação */
+    .sorter {
+      display: flex;
+      gap: 4px;
+      padding: 4px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 11px;
     }
-    .progress b { color: var(--done); }
+    .chip {
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 7px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background .15s, color .15s;
+    }
+    .chip:hover { color: var(--text); }
+    .chip.active {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
 
     .meter {
       margin: 4px 0 24px;
@@ -149,8 +174,8 @@
       height: 100%;
       width: 0%;
       border-radius: 999px;
-      background: linear-gradient(90deg, #2fb56b, var(--done));
-      transition: width .4s cubic-bezier(.4, 0, .2, 1);
+      background: var(--h-green);
+      transition: width .4s cubic-bezier(.4, 0, .2, 1), background .4s;
     }
 
     .meter-labels {
@@ -161,6 +186,7 @@
       color: var(--muted);
     }
     .meter-labels b { color: var(--done); }
+    .meter-labels .attn-n { color: var(--h-red); }
 
     ol {
       list-style: none;
@@ -205,54 +231,94 @@
       flex: 1;
       font-size: 16px;
       font-weight: 600;
+      min-width: 0;
+    }
+
+    .ago {
+      flex: 0 0 auto;
+      font-size: 12px;
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
     }
 
     .dur {
       flex: 0 0 auto;
       font-size: 13px;
       font-weight: 600;
-      color: var(--muted);
       font-variant-numeric: tabular-nums;
-      background: var(--accent-soft);
       color: var(--accent);
+      background: var(--accent-soft);
       padding: 3px 8px;
       border-radius: 7px;
     }
-    li.done .dur { background: transparent; color: var(--muted); }
 
-    .open-ico {
+    /* bolinha de saúde */
+    .health {
       flex: 0 0 auto;
-      width: 16px;
-      height: 16px;
-      color: var(--muted);
-      opacity: 0;
-      transition: opacity .15s;
-    }
-    li a.song:hover .open-ico { opacity: 1; }
-
-    /* botão de "pratiquei" */
-    .check {
-      flex: 0 0 auto;
-      width: 26px;
-      height: 26px;
-      border-radius: 50%;
-      border: 2px solid var(--line);
+      width: 30px;
+      height: 30px;
+      border: none;
       background: transparent;
       cursor: pointer;
       display: grid;
       place-items: center;
-      color: transparent;
-      transition: all .15s;
+      transition: transform .12s;
     }
-    .check:hover { border-color: var(--done); }
-    .check svg { width: 14px; height: 14px; }
+    .health:hover { transform: scale(1.15); }
+    .health::before {
+      content: "";
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--dot, var(--h-none));
+      box-shadow: 0 0 0 4px var(--dot-soft, rgba(255,255,255,.04));
+    }
+    .health.h-g { --dot: var(--h-green); --dot-soft: rgba(61,220,132,.16); }
+    .health.h-a { --dot: var(--h-amber); --dot-soft: rgba(255,176,32,.16); }
+    .health.h-r { --dot: var(--h-red);   --dot-soft: rgba(255,92,92,.16); }
+    .health.h-n { --dot: var(--h-none);  --dot-soft: rgba(255,255,255,.04); }
 
-    li.done a.song { opacity: 0.5; }
-    li.done .title { text-decoration: line-through; text-decoration-color: var(--muted); }
-    li.done .check {
-      background: var(--done);
-      border-color: var(--done);
-      color: #0f1115;
+    /* popover de avaliação */
+    .rate-pop {
+      position: fixed;
+      z-index: 50;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 6px;
+      box-shadow: 0 14px 34px rgba(0, 0, 0, 0.55);
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 180px;
+    }
+    .rate-pop[hidden] { display: none; }
+    .rate-pop button {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border: none;
+      background: transparent;
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      text-align: left;
+      width: 100%;
+    }
+    .rate-pop button:hover { background: var(--card-hover); }
+    .rate-pop .emoji { font-size: 17px; line-height: 1; }
+    .rate-pop .clear {
+      color: var(--muted);
+      font-weight: 500;
+      font-size: 13px;
+      border-top: 1px solid var(--line);
+      border-radius: 0 0 8px 8px;
+      margin-top: 2px;
+      padding-top: 11px;
     }
 
     .empty {
@@ -285,7 +351,7 @@
     <header>
       <div class="eyebrow">Setlist para praticar</div>
       <h1>Charlie Brown Jr.</h1>
-      <p class="sub">Toque numa música para abrir a partitura no Songsterr (nova aba). Marque a bolinha quando já tiver praticado.</p>
+      <p class="sub">Toque numa música pra abrir a partitura no Songsterr. Toque na bolinha pra registrar como foi o treino — a cor mostra a saúde de cada música.</p>
     </header>
 
     <div class="controls">
@@ -293,25 +359,34 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         <input id="search" type="search" placeholder="Buscar música…" autocomplete="off">
       </div>
-      <div class="progress"><b id="doneCount">0</b> de <span id="totalCount">0</span> praticadas</div>
+      <div class="sorter">
+        <button class="chip active" data-sort="setlist">Setlist</button>
+        <button class="chip" data-sort="priority">Prioridade</button>
+      </div>
       <div class="mini-meter"><span id="miniFill" class="mini-fill"></span></div>
     </div>
 
     <div class="meter">
       <div class="meter-bar"><span id="meterFill" class="meter-fill"></span></div>
       <div class="meter-labels">
-        <span><b id="timeDone">0min</b> praticado</span>
-        <span id="timeLeft">0min restante</span>
+        <span>Saúde do setlist · <b id="healthPct">–</b></span>
+        <span id="attn">–</span>
       </div>
     </div>
-
 
     <ol id="list"></ol>
     <p class="empty" id="empty">Nenhuma música encontrada.</p>
 
     <footer>
-      <button id="reset">Limpar marcações</button>
+      <button id="reset">Zerar saúde de todas</button>
     </footer>
+  </div>
+
+  <div class="rate-pop" id="ratePop" hidden>
+    <button data-r="solid"><span class="emoji">😎</span> Mandei bem</button>
+    <button data-r="ok"><span class="emoji">🙂</span> Foi ok</button>
+    <button data-r="shaky"><span class="emoji">😬</span> Travei</button>
+    <button data-r="clear" class="clear">Ainda não pratiquei</button>
   </div>
 
   <script>
@@ -358,62 +433,64 @@
       ["Gimme O Anel", "2:50"]
     ];
 
-    const STORE_KEY = "cbjr-setlist-done";
-    const done = new Set(JSON.parse(localStorage.getItem(STORE_KEY) || "[]"));
+    // ---- estado (saúde por música) ----
+    // store[nome] = { rating: "solid"|"ok"|"shaky", last: "YYYY-MM-DD" }
+    const STORE_KEY = "cbjr-setlist-health";
+    const store = JSON.parse(localStorage.getItem(STORE_KEY) || "{}");
+    const save = () => localStorage.setItem(STORE_KEY, JSON.stringify(store));
+
+    // meia-vida da saúde (em dias) por avaliação: quanto mais você domina, mais devagar cai
+    const HALF_LIFE = { solid: 60, ok: 14, shaky: 4 };
+    const RATING_LABEL = { solid: "Mandei bem", ok: "Foi ok", shaky: "Travei" };
+
+    // ---- datas ----
+    const TODAY = new Date(); TODAY.setHours(0, 0, 0, 0);
+    const ymd = (d) =>
+      d.getFullYear() + "-" +
+      String(d.getMonth() + 1).padStart(2, "0") + "-" +
+      String(d.getDate()).padStart(2, "0");
+    const todayStr = () => ymd(TODAY);
+    function daysSince(str) {
+      const [y, m, d] = str.split("-").map(Number);
+      const dt = new Date(y, m - 1, d); dt.setHours(0, 0, 0, 0);
+      return Math.round((TODAY - dt) / 86400000);
+    }
+    function agoText(str) {
+      const d = daysSince(str);
+      if (d <= 0) return "hoje";
+      if (d === 1) return "ontem";
+      return "há " + d + " dias";
+    }
+
+    // ---- saúde ----
+    // retorna 0..100, ou null se nunca praticada
+    function health(entry) {
+      if (!entry) return null;
+      const hl = HALF_LIFE[entry.rating] || 14;
+      return 100 * Math.pow(0.5, daysSince(entry.last) / hl);
+    }
+    function healthClass(h) {
+      if (h == null) return "h-n";
+      if (h >= 60) return "h-g";
+      if (h >= 30) return "h-a";
+      return "h-r";
+    }
 
     const list = document.getElementById("list");
     const emptyMsg = document.getElementById("empty");
     const searchInput = document.getElementById("search");
-    const doneCountEl = document.getElementById("doneCount");
-    const totalCountEl = document.getElementById("totalCount");
-
-    totalCountEl.textContent = songs.length;
-
-    // converte "m:ss" em segundos e monta um mapa nome -> segundos
-    const toSeconds = (dur) => {
-      const [m, s] = dur.split(":").map(Number);
-      return m * 60 + s;
-    };
-    const secondsByName = new Map(songs.map(([name, dur]) => [name, toSeconds(dur)]));
-    const totalSeconds = [...secondsByName.values()].reduce((a, b) => a + b, 0);
-
-    // formata segundos como "1h 23min" ou "45min"
-    const fmt = (secs) => {
-      const h = Math.floor(secs / 3600);
-      const m = Math.round((secs % 3600) / 60);
-      return (h ? h + "h " : "") + m + "min";
-    };
-
     const meterFill = document.getElementById("meterFill");
     const miniFill = document.getElementById("miniFill");
-    const timeDoneEl = document.getElementById("timeDone");
-    const timeLeftEl = document.getElementById("timeLeft");
+    const healthPctEl = document.getElementById("healthPct");
+    const attnEl = document.getElementById("attn");
+    const ratePop = document.getElementById("ratePop");
 
-    const checkIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
-    const openIcon = '<svg class="open-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>';
-
-    function save() {
-      localStorage.setItem(STORE_KEY, JSON.stringify([...done]));
-    }
-
-    function updateProgress() {
-      doneCountEl.textContent = done.size;
-
-      let doneSeconds = 0;
-      done.forEach(name => { doneSeconds += secondsByName.get(name) || 0; });
-      const leftSeconds = totalSeconds - doneSeconds;
-      const pct = totalSeconds ? (doneSeconds / totalSeconds) * 100 : 0;
-
-      meterFill.style.width = pct + "%";
-      miniFill.style.width = pct + "%";
-      timeDoneEl.textContent = fmt(doneSeconds);
-      timeLeftEl.textContent = leftSeconds > 0 ? fmt(leftSeconds) + " restante" : "tudo praticado! 🎸";
-    }
-
+    // ---- monta as linhas ----
     songs.forEach(([name, duration], i) => {
       const li = document.createElement("li");
       li.dataset.name = name.toLowerCase();
-      if (done.has(name)) li.classList.add("done");
+      li.dataset.songName = name;
+      li.dataset.index = i;
 
       const a = document.createElement("a");
       a.className = "song";
@@ -422,26 +499,115 @@
       a.innerHTML =
         '<span class="num">' + (i + 1) + '</span>' +
         '<span class="title"></span>' +
+        '<span class="ago"></span>' +
         '<span class="dur">' + duration + '</span>' +
-        openIcon +
-        '<button class="check" title="Marcar como praticada">' + checkIcon + '</button>';
+        '<button class="health" title="Registrar treino"></button>';
       a.querySelector(".title").textContent = name;
 
-      a.querySelector(".check").addEventListener("click", (e) => {
+      a.querySelector(".health").addEventListener("click", (e) => {
         e.preventDefault();
         e.stopPropagation();
-        if (done.has(name)) { done.delete(name); li.classList.remove("done"); }
-        else { done.add(name); li.classList.add("done"); }
-        save();
-        updateProgress();
+        openRatePop(name, e.currentTarget);
       });
 
       li.appendChild(a);
       list.appendChild(li);
+      applyRowState(li);
     });
 
-    updateProgress();
+    function applyRowState(li) {
+      const entry = store[li.dataset.songName];
+      const h = health(entry);
+      const dot = li.querySelector(".health");
+      dot.className = "health " + healthClass(h);
+      dot.title = entry
+        ? RATING_LABEL[entry.rating] + " · " + agoText(entry.last)
+        : "Ainda não praticada — toque pra registrar";
+      li.querySelector(".ago").textContent = entry ? agoText(entry.last) : "nova";
+      li.dataset.health = h == null ? -1 : h;
+    }
 
+    // ---- popover de avaliação ----
+    let currentName = null;
+    let currentLi = null;
+    function openRatePop(name, anchor) {
+      currentName = name;
+      currentLi = anchor.closest("li");
+      ratePop.hidden = false;
+      const r = anchor.getBoundingClientRect();
+      const pw = ratePop.offsetWidth, ph = ratePop.offsetHeight;
+      let left = r.right - pw;
+      let top = r.bottom + 8;
+      if (top + ph > window.innerHeight - 8) top = r.top - ph - 8;
+      left = Math.max(8, Math.min(left, window.innerWidth - pw - 8));
+      ratePop.style.left = left + "px";
+      ratePop.style.top = top + "px";
+    }
+    function closeRatePop() { ratePop.hidden = true; currentName = null; currentLi = null; }
+
+    ratePop.querySelectorAll("button").forEach(btn => {
+      btn.addEventListener("click", () => {
+        if (!currentName) return;
+        const r = btn.dataset.r;
+        if (r === "clear") delete store[currentName];
+        else store[currentName] = { rating: r, last: todayStr() };
+        save();
+        if (currentLi) applyRowState(currentLi);
+        updateSummary();
+        if (sortMode === "priority") sortList();
+        closeRatePop();
+      });
+    });
+
+    // fecha o popover ao clicar fora ou rolar
+    document.addEventListener("click", (e) => {
+      if (!ratePop.hidden && !ratePop.contains(e.target) && !e.target.closest(".health")) closeRatePop();
+    });
+    window.addEventListener("scroll", () => { if (!ratePop.hidden) closeRatePop(); }, true);
+
+    // ---- resumo (barra de saúde do setlist) ----
+    function updateSummary() {
+      let sum = 0, attention = 0;
+      songs.forEach(([name]) => {
+        const h = health(store[name]);
+        sum += (h == null ? 0 : h);
+        if (h == null || h < 30) attention++;
+      });
+      const avg = songs.length ? sum / songs.length : 0;
+      const col = avg >= 60 ? "var(--h-green)" : avg >= 30 ? "var(--h-amber)" : "var(--h-red)";
+      meterFill.style.width = avg + "%";
+      miniFill.style.width = avg + "%";
+      meterFill.style.background = col;
+      miniFill.style.background = col;
+      healthPctEl.textContent = Math.round(avg) + "%";
+      attnEl.innerHTML = attention
+        ? '<b class="attn-n">' + attention + "</b> precisam de atenção"
+        : "tudo em dia 🎸";
+    }
+    updateSummary();
+
+    // ---- ordenação ----
+    let sortMode = "setlist";
+    function sortList() {
+      const items = [...list.children];
+      items.sort((a, b) => {
+        if (sortMode === "setlist") return (+a.dataset.index) - (+b.dataset.index);
+        // prioridade: menos saúde primeiro (nunca praticada = -1 vem no topo)
+        const diff = (+a.dataset.health) - (+b.dataset.health);
+        return diff !== 0 ? diff : (+a.dataset.index) - (+b.dataset.index);
+      });
+      items.forEach(li => list.appendChild(li));
+    }
+    document.querySelectorAll(".chip").forEach(chip => {
+      chip.addEventListener("click", () => {
+        document.querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
+        chip.classList.add("active");
+        sortMode = chip.dataset.sort;
+        sortList();
+      });
+    });
+
+    // ---- busca ----
     searchInput.addEventListener("input", () => {
       const q = searchInput.value.trim().toLowerCase();
       let visible = 0;
@@ -453,20 +619,22 @@
       emptyMsg.style.display = visible ? "none" : "block";
     });
 
-    // mostra a linha fininha só quando a barra grande sai da tela
+    // ---- linha fininha de saúde ao rolar ----
     const miniMeter = document.querySelector(".mini-meter");
     const mainMeter = document.querySelector(".meter");
-    const io = new IntersectionObserver(
+    new IntersectionObserver(
       ([entry]) => miniMeter.classList.toggle("show", !entry.isIntersecting),
       { rootMargin: "-88px 0px 0px 0px" }
-    );
-    io.observe(mainMeter);
+    ).observe(mainMeter);
 
+    // ---- zerar ----
     document.getElementById("reset").addEventListener("click", () => {
-      done.clear();
+      if (!confirm("Zerar a saúde de todas as músicas?")) return;
+      for (const k in store) delete store[k];
       save();
-      updateProgress();
-      list.querySelectorAll("li.done").forEach(li => li.classList.remove("done"));
+      list.querySelectorAll("li").forEach(applyRowState);
+      updateSummary();
+      if (sortMode === "priority") sortList();
     });
   </script>
 </body>
