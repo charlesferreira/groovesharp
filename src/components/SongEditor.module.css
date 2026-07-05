@@ -1,0 +1,76 @@
+.field {
+  margin-bottom: 14px;
+}
+
+.label {
+  display: block;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.input {
+  width: 100%;
+  padding: 11px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.row2 {
+  display: flex;
+  gap: 12px;
+}
+
+.row2 .field {
+  flex: 1;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.btn {
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--text);
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btn:hover {
+  background: var(--card-hover);
+}
+
+.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #0f1115;
+}
+
+.primary:hover {
+  background: var(--accent);
+}
+
+.primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

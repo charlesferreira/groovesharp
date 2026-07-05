@@ -2,14 +2,17 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import styles from './App.module.css'
 import { Header } from './components/Header'
 import { HealthMeter } from './components/HealthMeter'
+import { Modal } from './components/Modal'
 import { RatePopover } from './components/RatePopover'
+import { SetlistSwitcher } from './components/SetlistSwitcher'
 import { SettingsPanel } from './components/SettingsPanel'
 import { SimBadge } from './components/SimBadge'
+import { SongEditor, type SongFormData } from './components/SongEditor'
 import { SongList } from './components/SongList'
 import { Toolbar } from './components/Toolbar'
 import { useAppState } from './hooks/useAppState'
 import { buildRows, filterRows, sortRows, summarize, type SortMode } from './lib/setlist'
-import type { Rating } from './types'
+import type { Rating, Song } from './types'
 
 const DAY = 86_400_000
 
@@ -18,14 +21,18 @@ interface PopoverState {
   anchor: DOMRect
 }
 
+type EditorState = { mode: 'add' } | { mode: 'edit'; song: Song } | null
+
 export default function App() {
-  const { state, rate, clearRating, setSpeed, resetPractice } = useAppState()
+  const { state, ...actions } = useAppState()
 
   const [search, setSearch] = useState('')
   const [sortMode, setSortMode] = useState<SortMode>('setlist')
   const [simDays, setSimDays] = useState(0)
   const [settingsOpen, setSettingsOpen] = useState(false)
+  const [editMode, setEditMode] = useState(false)
   const [popover, setPopover] = useState<PopoverState | null>(null)
+  const [editor, setEditor] = useState<EditorState>(null)
 
   const meterRef = useRef<HTMLDivElement>(null)
   const [meterOffscreen, setMeterOffscreen] = useState(false)
@@ -63,14 +70,45 @@ export default function App() {
   }
 
   function pick(rating: Rating) {
-    if (popover) rate(popover.songId, rating)
+    if (popover) actions.rate(popover.songId, rating)
     setPopover(null)
   }
 
   function clear() {
-    if (popover) clearRating(popover.songId)
+    if (popover) actions.clearRating(popover.songId)
     setPopover(null)
   }
+
+  function newSetlist() {
+    const name = prompt('Nome do novo setlist:')?.trim()
+    if (name) actions.addSetlist(name)
+  }
+
+  function renameSetlist() {
+    const name = prompt('Renomear setlist:', activeSetlist.name)?.trim()
+    if (name) actions.renameSetlist(activeSetlist.id, name)
+  }
+
+  function deleteSetlist() {
+    if (confirm(`Excluir "${activeSetlist.name}"? As avaliações das músicas dele serão perdidas.`)) {
+      actions.deleteSetlist(activeSetlist.id)
+    }
+  }
+
+  function removeSong(song: Song) {
+    if (confirm(`Remover "${song.title}" do setlist?`)) actions.removeSong(activeSetlist.id, song.id)
+  }
+
+  function saveSong(data: SongFormData) {
+    if (editor?.mode === 'edit') {
+      actions.updateSong(activeSetlist.id, editor.song.id, data)
+    } else {
+      actions.addSong(activeSetlist.id, data)
+    }
+    setEditor(null)
+  }
+
+  const defaultArtist = activeSetlist.songs[0]?.artist ?? ''
 
   return (
     <>
@@ -78,7 +116,7 @@ export default function App() {
         open={settingsOpen}
         onOpenChange={setSettingsOpen}
         speed={state.speed}
-        onSpeedChange={setSpeed}
+        onSpeedChange={actions.setSpeed}
         simDays={simDays}
         onSimChange={setSimDays}
       />
@@ -86,9 +124,19 @@ export default function App() {
       <div className={styles.wrap}>
         <Header
           eyebrow="GrooveSharp"
-          title={activeSetlist.name}
           sub="Toque numa música pra abrir a partitura no Songsterr. Toque na bolinha pra registrar como foi o treino — a cor mostra a saúde de cada música."
-        />
+        >
+          <SetlistSwitcher
+            setlists={state.setlists}
+            activeId={activeSetlist.id}
+            editMode={editMode}
+            onSelect={actions.setActiveSetlist}
+            onNew={newSetlist}
+            onRename={renameSetlist}
+            onDelete={deleteSetlist}
+            onToggleEdit={() => setEditMode((v) => !v)}
+          />
+        </Header>
 
         <Toolbar
           search={search}
@@ -101,13 +149,27 @@ export default function App() {
 
         <HealthMeter ref={meterRef} avg={summary.avg} attention={summary.attention} />
 
-        <SongList rows={displayed} positionById={positionById} nowMs={nowMs} onRate={handleRate} />
+        <SongList
+          rows={displayed}
+          positionById={positionById}
+          nowMs={nowMs}
+          editMode={editMode}
+          onRate={handleRate}
+          onEdit={(song) => setEditor({ mode: 'edit', song })}
+          onRemove={removeSong}
+        />
+
+        {editMode && (
+          <button className={styles.addSong} onClick={() => setEditor({ mode: 'add' })}>
+            ＋ Adicionar música
+          </button>
+        )}
 
         <footer className={styles.footer}>
           <button
             className={styles.reset}
             onClick={() => {
-              if (confirm('Zerar a saúde de todas as músicas?')) resetPractice()
+              if (confirm('Zerar a saúde de todas as músicas?')) actions.resetPractice()
             }}
           >
             Zerar saúde de todas
@@ -122,6 +184,20 @@ export default function App() {
           onClear={clear}
           onClose={() => setPopover(null)}
         />
+      )}
+
+      {editor && (
+        <Modal
+          title={editor.mode === 'edit' ? 'Editar música' : 'Nova música'}
+          onClose={() => setEditor(null)}
+        >
+          <SongEditor
+            initial={editor.mode === 'edit' ? editor.song : undefined}
+            defaultArtist={defaultArtist}
+            onSave={saveSong}
+            onCancel={() => setEditor(null)}
+          />
+        </Modal>
       )}
 
       <SimBadge simDays={simDays} onClear={() => setSimDays(0)} />

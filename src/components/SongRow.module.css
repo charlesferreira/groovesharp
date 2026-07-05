@@ -64,3 +64,31 @@
   padding: 3px 8px;
   border-radius: 7px;
 }
+
+.iconBtn {
+  flex: 0 0 auto;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background 0.15s, color 0.15s;
+}
+
+.iconBtn:hover {
+  background: var(--card-hover);
+  color: var(--text);
+}
+
+.remove:hover {
+  color: var(--h-red);
+}
+
+.iconBtn svg {
+  width: 17px;
+  height: 17px;
+}

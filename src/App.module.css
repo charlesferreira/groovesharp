@@ -4,6 +4,25 @@
   padding: 48px 20px 80px;
 }
 
+.addSong {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px dashed var(--line);
+  border-radius: 14px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.addSong:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
 .footer {
   margin-top: 40px;
   text-align: center;

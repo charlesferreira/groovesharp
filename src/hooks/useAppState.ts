@@ -1,38 +1,40 @@
-import { useCallback, useEffect, useState } from 'react'
-import type { AppState, Rating } from '../types'
+import { useEffect, useMemo, useReducer } from 'react'
+import { reducer } from '../lib/appReducer'
+import { uid } from '../lib/id'
 import { loadState, saveState } from '../lib/storage'
+import type { Rating, Song } from '../types'
 
 /** Estado do app + ações, com persistência automática no localStorage. */
 export function useAppState() {
-  const [state, setState] = useState<AppState>(loadState)
+  const [state, dispatch] = useReducer(reducer, undefined, loadState)
 
   useEffect(() => {
     saveState(state)
   }, [state])
 
-  /** Registra um treino. Grava sempre o "agora" real (nunca o simulado). */
-  const rate = useCallback((songId: string, rating: Rating) => {
-    setState((s) => ({
-      ...s,
-      practice: { ...s.practice, [songId]: { rating, last: Date.now() } },
-    }))
-  }, [])
+  const actions = useMemo(
+    () => ({
+      /** Registra um treino. Grava sempre o "agora" real (nunca o simulado). */
+      rate: (songId: string, rating: Rating) =>
+        dispatch({ type: 'rate', songId, rating, now: Date.now() }),
+      clearRating: (songId: string) => dispatch({ type: 'clearRating', songId }),
+      setSpeed: (speed: number) => dispatch({ type: 'setSpeed', speed }),
+      resetPractice: () => dispatch({ type: 'resetPractice' }),
 
-  const clearRating = useCallback((songId: string) => {
-    setState((s) => {
-      const practice = { ...s.practice }
-      delete practice[songId]
-      return { ...s, practice }
-    })
-  }, [])
+      addSetlist: (name: string) => dispatch({ type: 'addSetlist', id: uid('sl_'), name }),
+      renameSetlist: (id: string, name: string) => dispatch({ type: 'renameSetlist', id, name }),
+      deleteSetlist: (id: string) => dispatch({ type: 'deleteSetlist', id }),
+      setActiveSetlist: (id: string) => dispatch({ type: 'setActiveSetlist', id }),
 
-  const setSpeed = useCallback((speed: number) => {
-    setState((s) => ({ ...s, speed }))
-  }, [])
+      addSong: (setlistId: string, data: Omit<Song, 'id'>) =>
+        dispatch({ type: 'addSong', setlistId, song: { ...data, id: uid('sg_') } }),
+      updateSong: (setlistId: string, songId: string, patch: Partial<Song>) =>
+        dispatch({ type: 'updateSong', setlistId, songId, patch }),
+      removeSong: (setlistId: string, songId: string) =>
+        dispatch({ type: 'removeSong', setlistId, songId }),
+    }),
+    [],
+  )
 
-  const resetPractice = useCallback(() => {
-    setState((s) => ({ ...s, practice: {} }))
-  }, [])
-
-  return { state, rate, clearRating, setSpeed, resetPractice }
+  return { state, ...actions }
 }
