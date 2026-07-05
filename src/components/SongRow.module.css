@@ -46,6 +46,22 @@
   min-width: 0;
 }
 
+.meta {
+  display: flex;
+  gap: 6px;
+  flex: 0 0 auto;
+}
+
+.chip {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 2px 7px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
 .ago {
   flex: 0 0 auto;
   font-size: 12px;

@@ -23,7 +23,7 @@ instalável no celular (PWA) e publicada no GitHub Pages.
 - [x] **F1 — Biblioteca editável + vários setlists**: criar/renomear/excluir
   setlists; adicionar/editar/remover músicas pela interface. Migração dos dados
   do protótipo. (Estado num reducer testado; seletor de setlist + modo edição.)
-- [ ] **F2 — Dados por música**: tom, BPM, afinação/capo, anotações e vários
+- [x] **F2 — Dados por música**: tom, BPM, afinação/capo, anotações e vários
   links (Songsterr, YouTube, cifra). Tela/painel de detalhe da música.
 - [ ] **F3 — Prontidão pro show**: data do próximo show, contagem regressiva,
   score de prontidão e plano de treino (o que priorizar a cada dia).

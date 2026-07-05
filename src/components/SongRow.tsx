@@ -59,6 +59,12 @@ export function SongRow({ position, row, nowMs, editMode, onRate, onEdit, onRemo
       <a className={styles.song} href={primaryLink(song)} target="songsterr">
         <span className={styles.num}>{position}</span>
         <span className={styles.title}>{song.title}</span>
+        {(song.key || song.bpm) && (
+          <span className={styles.meta}>
+            {song.key && <span className={styles.chip}>{song.key}</span>}
+            {song.bpm && <span className={styles.chip}>{song.bpm} BPM</span>}
+          </span>
+        )}
         <span className={styles.ago}>{ago}</span>
         <span className={styles.dur}>{song.duration}</span>
         <HealthDot variant={healthClass(health)} title={dotTitle} onClick={(a) => onRate(song.id, a)} />

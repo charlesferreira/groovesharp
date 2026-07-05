@@ -38,11 +38,49 @@
   flex: 1;
 }
 
+.linkRow {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+  align-items: center;
+}
+
+.linkRemove {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--muted);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.linkRemove:hover {
+  color: var(--h-red);
+  border-color: var(--h-red);
+}
+
+.addLink {
+  border: none;
+  background: transparent;
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 0;
+}
+
 .actions {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
   margin-top: 22px;
+}
+
+textarea.input {
+  resize: vertical;
+  font-family: inherit;
 }
 
 .btn {

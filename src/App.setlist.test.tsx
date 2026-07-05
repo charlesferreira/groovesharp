@@ -35,6 +35,26 @@ test('modo edição permite adicionar uma música', async () => {
   expect(screen.getByText('Minha Música Nova')).toBeInTheDocument()
 })
 
+test('editar uma música salva BPM e mostra o chip', async () => {
+  const user = userEvent.setup()
+  render(<App />)
+
+  await openSetlistMenu(user)
+  await user.click(screen.getByRole('button', { name: /Editar músicas/ }))
+
+  const editButtons = screen.getAllByTitle('Editar')
+  await user.click(editButtons[0]) // Pipeline
+
+  await user.type(screen.getByLabelText('BPM'), '150')
+  await user.click(screen.getByRole('button', { name: 'Salvar' }))
+
+  // sai do modo edição pra ver os chips (só aparecem no modo prática)
+  await openSetlistMenu(user)
+  await user.click(screen.getByRole('button', { name: /Concluir edição/ }))
+
+  expect(screen.getByText('150 BPM')).toBeInTheDocument()
+})
+
 test('remove uma música no modo edição', async () => {
   const user = userEvent.setup()
   vi.spyOn(window, 'confirm').mockReturnValue(true)
