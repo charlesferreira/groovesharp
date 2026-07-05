@@ -29,7 +29,8 @@ instalável no celular (PWA) e publicada no GitHub Pages.
   score de prontidão e plano de treino (o que priorizar a cada dia).
 - [ ] **F4 — Modo palco**: tela cheia pro show (ordem, avançar músicas, tempo
   total, info da música, autoscroll).
-- [ ] **F5 — PWA + deploy**: manifest, ícones, offline; publicar no GitHub Pages.
+- [x] **F5 — PWA + deploy**: manifest, ícones, offline; publicado no GitHub Pages
+  em https://charlesferreira.github.io/groovesharp/ (deploy automático via Actions).
 - [ ] **F6 — Backup**: export/import dos dados (JSON) para não perder nada e
   passar entre dispositivos.
 
