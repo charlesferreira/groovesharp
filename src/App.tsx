@@ -10,6 +10,7 @@ import { ShowCard } from './components/ShowCard'
 import { SimBadge } from './components/SimBadge'
 import { SongEditor, type SongFormData } from './components/SongEditor'
 import { SongList } from './components/SongList'
+import { StageMode } from './components/StageMode'
 import { Toolbar } from './components/Toolbar'
 import { useAppState } from './hooks/useAppState'
 import { downloadBackup, parseBackup } from './lib/backup'
@@ -34,6 +35,7 @@ export default function App() {
   const [simDays, setSimDays] = useState(0)
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [editMode, setEditMode] = useState(false)
+  const [stageOpen, setStageOpen] = useState(false)
   const [popover, setPopover] = useState<PopoverState | null>(null)
   const [editor, setEditor] = useState<EditorState>(null)
 
@@ -160,6 +162,7 @@ export default function App() {
             onRename={renameSetlist}
             onDelete={deleteSetlist}
             onToggleEdit={() => setEditMode((v) => !v)}
+            onStage={() => setStageOpen(true)}
           />
         </Header>
 
@@ -235,6 +238,14 @@ export default function App() {
       )}
 
       <SimBadge simDays={simDays} onClear={() => setSimDays(0)} />
+
+      {stageOpen && (
+        <StageMode
+          setlistName={activeSetlist.name}
+          songs={activeSetlist.songs}
+          onClose={() => setStageOpen(false)}
+        />
+      )}
     </>
   )
 }

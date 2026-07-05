@@ -11,6 +11,7 @@ interface SetlistSwitcherProps {
   onRename: () => void
   onDelete: () => void
   onToggleEdit: () => void
+  onStage: () => void
 }
 
 export function SetlistSwitcher({
@@ -22,6 +23,7 @@ export function SetlistSwitcher({
   onRename,
   onDelete,
   onToggleEdit,
+  onStage,
 }: SetlistSwitcherProps) {
   const [open, setOpen] = useState(false)
   const wrapRef = useRef<HTMLDivElement>(null)
@@ -86,6 +88,9 @@ export function SetlistSwitcher({
 
           <div className={styles.divider} />
 
+          <button className={styles.item} onClick={run(onStage)}>
+            🎭 Modo palco
+          </button>
           <button className={styles.item} onClick={run(onToggleEdit)}>
             🎵 {editMode ? 'Concluir edição' : 'Editar músicas'}
           </button>
