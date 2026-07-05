@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Setlist — Charlie Brown Jr.</title>
+  <style>
+    :root {
+      --bg: #0f1115;
+      --card: #171a21;
+      --card-hover: #1e222b;
+      --accent: #ffb020;
+      --accent-soft: rgba(255, 176, 32, 0.15);
+      --text: #f2f3f5;
+      --muted: #8b909a;
+      --line: #262a33;
+      --done: #3ddc84;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: radial-gradient(1200px 600px at 50% -10%, #1b1f2a 0%, var(--bg) 60%);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .wrap {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 48px 20px 80px;
+    }
+
+    header {
+      margin-bottom: 28px;
+    }
+
+    .eyebrow {
+      font-size: 13px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    h1 {
+      font-size: 34px;
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+
+    .sub {
+      color: var(--muted);
+      margin-top: 10px;
+      font-size: 15px;
+    }
+
+    .controls {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      padding: 16px 0;
+      margin-bottom: 8px;
+      background: linear-gradient(var(--bg) 70%, transparent);
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .mini-meter {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 6px;
+      height: 3px;
+      background: var(--line);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s;
+    }
+    .mini-meter.show { opacity: 1; }
+
+    .mini-fill {
+      display: block;
+      height: 100%;
+      width: 0%;
+      background: var(--done);
+      transition: width .4s cubic-bezier(.4, 0, .2, 1);
+    }
+
+    .search {
+      flex: 1 1 220px;
+      position: relative;
+    }
+
+    .search input {
+      width: 100%;
+      padding: 12px 14px 12px 40px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: var(--card);
+      color: var(--text);
+      font-size: 15px;
+      outline: none;
+      transition: border-color .15s, box-shadow .15s;
+    }
+
+    .search input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+
+    .search svg {
+      position: absolute;
+      left: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px;
+      height: 16px;
+      color: var(--muted);
+    }
+
+    .progress {
+      font-size: 13px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .progress b { color: var(--done); }
+
+    .meter {
+      margin: 4px 0 24px;
+    }
+
+    .meter-bar {
+      height: 12px;
+      border-radius: 999px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      overflow: hidden;
+    }
+
+    .meter-fill {
+      display: block;
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #2fb56b, var(--done));
+      transition: width .4s cubic-bezier(.4, 0, .2, 1);
+    }
+
+    .meter-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .meter-labels b { color: var(--done); }
+
+    ol {
+      list-style: none;
+    }
+
+    li a.song {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      margin-bottom: 10px;
+      text-decoration: none;
+      color: var(--text);
+      background: var(--card);
+      transition: background .15s, border-color .15s, transform .08s;
+    }
+
+    li a.song:hover {
+      background: var(--card-hover);
+      border-color: #333844;
+      transform: translateY(-1px);
+    }
+
+    li a.song:active { transform: translateY(0); }
+
+    .num {
+      flex: 0 0 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 9px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .title {
+      flex: 1;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .dur {
+      flex: 0 0 auto;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+      background: var(--accent-soft);
+      color: var(--accent);
+      padding: 3px 8px;
+      border-radius: 7px;
+    }
+    li.done .dur { background: transparent; color: var(--muted); }
+
+    .open-ico {
+      flex: 0 0 auto;
+      width: 16px;
+      height: 16px;
+      color: var(--muted);
+      opacity: 0;
+      transition: opacity .15s;
+    }
+    li a.song:hover .open-ico { opacity: 1; }
+
+    /* botão de "pratiquei" */
+    .check {
+      flex: 0 0 auto;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 2px solid var(--line);
+      background: transparent;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      color: transparent;
+      transition: all .15s;
+    }
+    .check:hover { border-color: var(--done); }
+    .check svg { width: 14px; height: 14px; }
+
+    li.done a.song { opacity: 0.5; }
+    li.done .title { text-decoration: line-through; text-decoration-color: var(--muted); }
+    li.done .check {
+      background: var(--done);
+      border-color: var(--done);
+      color: #0f1115;
+    }
+
+    .empty {
+      text-align: center;
+      color: var(--muted);
+      padding: 40px 0;
+      display: none;
+    }
+
+    footer {
+      margin-top: 40px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    footer button {
+      background: none;
+      border: none;
+      color: var(--muted);
+      text-decoration: underline;
+      cursor: pointer;
+      font-size: 13px;
+      padding: 0;
+    }
+    footer button:hover { color: var(--text); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="eyebrow">Setlist para praticar</div>
+      <h1>Charlie Brown Jr.</h1>
+      <p class="sub">Toque numa música para abrir a partitura no Songsterr (nova aba). Marque a bolinha quando já tiver praticado.</p>
+    </header>
+
+    <div class="controls">
+      <div class="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input id="search" type="search" placeholder="Buscar música…" autocomplete="off">
+      </div>
+      <div class="progress"><b id="doneCount">0</b> de <span id="totalCount">0</span> praticadas</div>
+      <div class="mini-meter"><span id="miniFill" class="mini-fill"></span></div>
+    </div>
+
+    <div class="meter">
+      <div class="meter-bar"><span id="meterFill" class="meter-fill"></span></div>
+      <div class="meter-labels">
+        <span><b id="timeDone">0min</b> praticado</span>
+        <span id="timeLeft">0min restante</span>
+      </div>
+    </div>
+
+
+    <ol id="list"></ol>
+    <p class="empty" id="empty">Nenhuma música encontrada.</p>
+
+    <footer>
+      <button id="reset">Limpar marcações</button>
+    </footer>
+  </div>
+
+  <script>
+    const BASE = "https://www.songsterr.com/?pattern=";
+    const BAND = "Charlie Brown Jr";
+    const songs = [
+      ["Pipeline", "1:57"],
+      ["Não Viva Em Vão", "3:55"],
+      ["Lutar Pelo Que É Meu", "3:57"],
+      ["Tudo Mudar", "2:14"],
+      ["Te Levar Daqui", "3:05"],
+      ["Pontes Indestrutíveis", "3:31"],
+      ["Tamo Aí Na Atividade", "3:40"],
+      ["Lugar Ao Sol", "3:33"],
+      ["Senhor Do Tempo", "3:23"],
+      ["Como Tudo Deve Ser", "4:33"],
+      ["Não É Sério", "4:52"],
+      ["Zoio De Lula", "4:12"],
+      ["Meu Novo Mundo", "3:27"],
+      ["Ela Vai Voltar", "3:08"],
+      ["Dias De Luta, Dias De Glória", "2:21"],
+      ["Longe De Você", "3:35"],
+      ["Céu Azul", "3:19"],
+      ["Só Os Loucos Sabem", "3:16"],
+      ["Quebra-Mar", "1:54"],
+      ["Tudo Pro Alto", "3:04"],
+      ["Samba Makossa", "4:06"],
+      ["Vícios E Virtudes", "3:10"],
+      ["Quinta-Feira", "5:17"],
+      ["Não Uso Sapato", "2:53"],
+      ["O Preço", "3:31"],
+      ["Só Por Uma Noite", "3:23"],
+      ["Me Encontra", "3:31"],
+      ["Dona Do Meu Pensamento", "4:00"],
+      ["Sino Dourado", "2:41"],
+      ["Hoje Eu Acordei Feliz", "2:18"],
+      ["O Coro Vai Comê", "2:21"],
+      ["Tudo Que Ela Gosta De Escutar", "2:56"],
+      ["Rubão, O Dono Do Mundo", "2:15"],
+      ["Proibida Pra Mim", "2:48"],
+      ["Confisco", "2:59"],
+      ["Papo Reto", "3:31"],
+      ["Não Deixe O Mar Te Engolir", "5:09"],
+      ["Gimme O Anel", "2:50"]
+    ];
+
+    const STORE_KEY = "cbjr-setlist-done";
+    const done = new Set(JSON.parse(localStorage.getItem(STORE_KEY) || "[]"));
+
+    const list = document.getElementById("list");
+    const emptyMsg = document.getElementById("empty");
+    const searchInput = document.getElementById("search");
+    const doneCountEl = document.getElementById("doneCount");
+    const totalCountEl = document.getElementById("totalCount");
+
+    totalCountEl.textContent = songs.length;
+
+    // converte "m:ss" em segundos e monta um mapa nome -> segundos
+    const toSeconds = (dur) => {
+      const [m, s] = dur.split(":").map(Number);
+      return m * 60 + s;
+    };
+    const secondsByName = new Map(songs.map(([name, dur]) => [name, toSeconds(dur)]));
+    const totalSeconds = [...secondsByName.values()].reduce((a, b) => a + b, 0);
+
+    // formata segundos como "1h 23min" ou "45min"
+    const fmt = (secs) => {
+      const h = Math.floor(secs / 3600);
+      const m = Math.round((secs % 3600) / 60);
+      return (h ? h + "h " : "") + m + "min";
+    };
+
+    const meterFill = document.getElementById("meterFill");
+    const miniFill = document.getElementById("miniFill");
+    const timeDoneEl = document.getElementById("timeDone");
+    const timeLeftEl = document.getElementById("timeLeft");
+
+    const checkIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+    const openIcon = '<svg class="open-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>';
+
+    function save() {
+      localStorage.setItem(STORE_KEY, JSON.stringify([...done]));
+    }
+
+    function updateProgress() {
+      doneCountEl.textContent = done.size;
+
+      let doneSeconds = 0;
+      done.forEach(name => { doneSeconds += secondsByName.get(name) || 0; });
+      const leftSeconds = totalSeconds - doneSeconds;
+      const pct = totalSeconds ? (doneSeconds / totalSeconds) * 100 : 0;
+
+      meterFill.style.width = pct + "%";
+      miniFill.style.width = pct + "%";
+      timeDoneEl.textContent = fmt(doneSeconds);
+      timeLeftEl.textContent = leftSeconds > 0 ? fmt(leftSeconds) + " restante" : "tudo praticado! 🎸";
+    }
+
+    songs.forEach(([name, duration], i) => {
+      const li = document.createElement("li");
+      li.dataset.name = name.toLowerCase();
+      if (done.has(name)) li.classList.add("done");
+
+      const a = document.createElement("a");
+      a.className = "song";
+      a.href = BASE + encodeURIComponent(BAND + " " + name);
+      a.target = "songsterr";
+      a.innerHTML =
+        '<span class="num">' + (i + 1) + '</span>' +
+        '<span class="title"></span>' +
+        '<span class="dur">' + duration + '</span>' +
+        openIcon +
+        '<button class="check" title="Marcar como praticada">' + checkIcon + '</button>';
+      a.querySelector(".title").textContent = name;
+
+      a.querySelector(".check").addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (done.has(name)) { done.delete(name); li.classList.remove("done"); }
+        else { done.add(name); li.classList.add("done"); }
+        save();
+        updateProgress();
+      });
+
+      li.appendChild(a);
+      list.appendChild(li);
+    });
+
+    updateProgress();
+
+    searchInput.addEventListener("input", () => {
+      const q = searchInput.value.trim().toLowerCase();
+      let visible = 0;
+      list.querySelectorAll("li").forEach(li => {
+        const match = li.dataset.name.includes(q);
+        li.style.display = match ? "" : "none";
+        if (match) visible++;
+      });
+      emptyMsg.style.display = visible ? "none" : "block";
+    });
+
+    // mostra a linha fininha só quando a barra grande sai da tela
+    const miniMeter = document.querySelector(".mini-meter");
+    const mainMeter = document.querySelector(".meter");
+    const io = new IntersectionObserver(
+      ([entry]) => miniMeter.classList.toggle("show", !entry.isIntersecting),
+      { rootMargin: "-88px 0px 0px 0px" }
+    );
+    io.observe(mainMeter);
+
+    document.getElementById("reset").addEventListener("click", () => {
+      done.clear();
+      save();
+      updateProgress();
+      list.querySelectorAll("li.done").forEach(li => li.classList.remove("done"));
+    });
+  </script>
+</body>
+</html>
