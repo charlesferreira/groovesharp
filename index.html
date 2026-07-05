@@ -158,12 +158,60 @@
     }
 
     .meter {
-      margin: 4px 0 16px;
+      margin: 4px 0 24px;
     }
 
-    .scale {
-      margin: 0 0 26px;
+    /* botão e painel de opções */
+    .settings-btn {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      z-index: 40;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1px solid var(--line);
+      background: rgba(23, 26, 33, 0.8);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      color: var(--muted);
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      transition: color .15s, border-color .15s;
     }
+    .settings-btn:hover { color: var(--text); border-color: #333844; }
+    .settings-btn svg { width: 18px; height: 18px; }
+
+    .settings-panel {
+      position: fixed;
+      top: 64px;
+      right: 16px;
+      z-index: 40;
+      width: 330px;
+      max-width: calc(100vw - 32px);
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 18px 20px;
+      box-shadow: 0 18px 44px rgba(0, 0, 0, 0.6);
+    }
+    .settings-panel[hidden] { display: none; }
+    .settings-panel .scale { margin: 0; }
+    .settings-section h3 {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+    .settings-section + .settings-section {
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid var(--line);
+    }
+
     .scale-head {
       display: flex;
       justify-content: space-between;
@@ -179,7 +227,7 @@
       font-variant-numeric: tabular-nums;
       text-align: right;
     }
-    #scale {
+    .range {
       -webkit-appearance: none;
       appearance: none;
       width: 100%;
@@ -189,22 +237,22 @@
       outline: none;
       cursor: pointer;
     }
-    #scale::-webkit-slider-thumb {
+    .range::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
       width: 20px;
       height: 20px;
       border-radius: 50%;
       background: var(--accent);
-      border: 3px solid var(--bg);
+      border: 3px solid var(--card);
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
     }
-    #scale::-moz-range-thumb {
+    .range::-moz-range-thumb {
       width: 16px;
       height: 16px;
       border-radius: 50%;
       background: var(--accent);
-      border: 3px solid var(--bg);
+      border: 3px solid var(--card);
       cursor: pointer;
     }
     .scale-ends {
@@ -403,6 +451,33 @@
   </style>
 </head>
 <body>
+  <button id="settingsBtn" class="settings-btn" title="Opções" aria-label="Opções">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+  </button>
+  <div id="settingsPanel" class="settings-panel" hidden>
+    <div class="settings-section">
+      <h3>Escala de tempo</h3>
+      <div class="scale">
+        <div class="scale-head">
+          <span>Ritmo de queda</span>
+          <span id="scaleInfo" class="scale-info"></span>
+        </div>
+        <input type="range" id="scale" class="range" min="0" max="100" step="1" value="0">
+        <div class="scale-ends"><span>treino constante</span><span>véspera de show</span></div>
+      </div>
+    </div>
+    <div class="settings-section">
+      <h3>Simulação</h3>
+      <div class="scale">
+        <div class="scale-head">
+          <span>Prever o futuro</span>
+          <span id="simInfo" class="scale-info"></span>
+        </div>
+        <input type="range" id="simRange" class="range" min="0" max="30" step="1" value="0">
+        <div class="scale-ends"><span>hoje</span><span>+30 dias</span></div>
+      </div>
+    </div>
+  </div>
   <div class="wrap">
     <header>
       <div class="eyebrow">Setlist para praticar</div>
@@ -428,15 +503,6 @@
         <span>Saúde do setlist · <b id="healthPct">–</b></span>
         <span id="attn">–</span>
       </div>
-    </div>
-
-    <div class="scale">
-      <div class="scale-head">
-        <span>Escala de tempo</span>
-        <span id="scaleInfo" class="scale-info"></span>
-      </div>
-      <input type="range" id="scale" min="0" max="100" step="1" value="0">
-      <div class="scale-ends"><span>treino constante</span><span>véspera de show</span></div>
     </div>
 
     <ol id="list"></ol>
@@ -512,24 +578,10 @@
     // modo simulação: ?sim=30 finge que passaram 30 dias (só pra testar o decaimento).
     // No console: simular(30) recarrega com o offset; simular(0) volta ao normal.
     const SIM_DAYS = parseInt(new URLSearchParams(location.search).get("sim"), 10) || 0;
-    window.simular = (d) => {
-      const u = new URL(location.href);
-      if (d) u.searchParams.set("sim", d); else u.searchParams.delete("sim");
-      location.href = u.toString();
-    };
-
-    const SIM_MS = SIM_DAYS * 86400000;
-    const nowMs = () => Date.now() + SIM_MS;   // "agora" — deslocado pela simulação, se houver
-    if (SIM_DAYS) {
-      const badge = document.createElement("div");
-      badge.textContent = "⏱ simulando +" + SIM_DAYS + " dias — clique pra sair";
-      badge.style.cssText =
-        "position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:100;" +
-        "background:#ffb020;color:#0f1115;font:600 13px/1 -apple-system,sans-serif;" +
-        "padding:10px 16px;border-radius:999px;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.4)";
-      badge.onclick = () => window.simular(0);
-      document.body.appendChild(badge);
-    }
+    let simDays = Math.max(0, SIM_DAYS);         // dias simulados (0 = hoje); ajustável no painel
+    const nowMs = () => Date.now() + simDays * 86400000;
+    // atalho de console: simular(5) prevê daqui a 5 dias; simular(0) volta pra hoje
+    window.simular = (d) => { simDays = Math.max(0, Math.round(d) || 0); refreshTime(); };
 
     // last é gravado em ms (Date.now); o formato antigo "YYYY-MM-DD" ainda é lido
     function lastMs(entry) {
@@ -730,6 +782,50 @@
       updateSummary();
       updateScaleInfo();
       if (sortMode === "priority") sortList();
+    });
+
+    // ---- simulação (prever o futuro) ----
+    const simRange = document.getElementById("simRange");
+    const simInfoEl = document.getElementById("simInfo");
+    const simBadge = document.createElement("div");
+    simBadge.style.cssText =
+      "position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:100;" +
+      "background:#ffb020;color:#0f1115;font:600 13px/1 -apple-system,sans-serif;" +
+      "padding:10px 16px;border-radius:999px;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.4)";
+    simBadge.onclick = () => window.simular(0);
+    document.body.appendChild(simBadge);
+
+    function syncSimUI() {
+      simRange.value = Math.min(30, simDays);
+      simInfoEl.textContent = simDays === 0
+        ? "vendo hoje"
+        : "daqui a " + simDays + (simDays === 1 ? " dia" : " dias");
+      simBadge.textContent = "⏱ prevendo +" + simDays + (simDays === 1 ? " dia" : " dias") + " — voltar pra hoje";
+      simBadge.style.display = simDays > 0 ? "block" : "none";
+    }
+    // refaz linhas + resumo quando o "agora" muda (usada também pelo window.simular)
+    function refreshTime() {
+      list.querySelectorAll("li").forEach(applyRowState);
+      updateSummary();
+      if (sortMode === "priority") sortList();
+      syncSimUI();
+    }
+    simRange.addEventListener("input", () => {
+      simDays = parseInt(simRange.value, 10) || 0;
+      refreshTime();
+    });
+    syncSimUI();
+
+    // ---- painel de opções ----
+    const settingsBtn = document.getElementById("settingsBtn");
+    const settingsPanel = document.getElementById("settingsPanel");
+    settingsBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      settingsPanel.hidden = !settingsPanel.hidden;
+    });
+    document.addEventListener("click", (e) => {
+      if (!settingsPanel.hidden && !settingsPanel.contains(e.target) && !settingsBtn.contains(e.target))
+        settingsPanel.hidden = true;
     });
 
     // ---- busca ----

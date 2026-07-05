@@ -23,12 +23,17 @@ Abra o arquivo [`index.html`](index.html) no navegador (duplo clique ou arraste 
   decaimento (meia-vida: solid 60d, ok 14d, shaky 4d). Salvo em `localStorage`.
 - **Ordenação Setlist / Prioridade**: prioridade joga as músicas mais críticas
   (e as nunca praticadas) pro topo.
-- **Escala de tempo (slider)**: acelera o decaimento proporcionalmente, sem mudar
-  as proporções entre as avaliações. No padrão (esquerda) a saúde cai ao longo de
-  semanas/meses — bom pra treino constante. Puxando pra direita ("véspera de show")
-  ela cai em dias/horas, útil pra priorizar o que treinar na semana de um show.
-  O registro de treino é um timestamp completo (ms), então funciona em escala de
-  horas. Salvo em `localStorage`.
+- **Painel de opções** (engrenagem no canto superior direito) reúne, pra não poluir
+  a interface:
+  - **Escala de tempo (slider)**: acelera o decaimento proporcionalmente, sem mudar
+    as proporções entre as avaliações. No padrão (esquerda) a saúde cai ao longo de
+    semanas/meses — bom pra treino constante. Puxando pra direita ("véspera de show")
+    ela cai em dias/horas, útil pra priorizar o que treinar na semana de um show.
+    O registro de treino é um timestamp completo (ms), então funciona em escala de
+    horas. Salvo em `localStorage`.
+  - **Simulação (slider)**: "prevê o futuro" deslocando o cálculo em N dias (0–30)
+    sem alterar os dados — só pra ver como o setlist estará. Também aceita `?sim=N`
+    na URL e `simular(N)` no console.
 - **Barra de saúde do setlist**: média da saúde de todas as músicas + contagem
   de "quantas precisam de atenção". Versão fininha aparece colada na barra de
   busca só quando a barra grande sai da tela.
