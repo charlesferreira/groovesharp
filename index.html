@@ -158,7 +158,63 @@
     }
 
     .meter {
-      margin: 4px 0 24px;
+      margin: 4px 0 16px;
+    }
+
+    .scale {
+      margin: 0 0 26px;
+    }
+    .scale-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+    .scale-info {
+      color: var(--text);
+      font-size: 12px;
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+    }
+    #scale {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--line);
+      outline: none;
+      cursor: pointer;
+    }
+    #scale::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: 3px solid var(--bg);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    }
+    #scale::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: 3px solid var(--bg);
+      cursor: pointer;
+    }
+    .scale-ends {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 7px;
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--muted);
     }
 
     .meter-bar {
@@ -374,6 +430,15 @@
       </div>
     </div>
 
+    <div class="scale">
+      <div class="scale-head">
+        <span>Escala de tempo</span>
+        <span id="scaleInfo" class="scale-info"></span>
+      </div>
+      <input type="range" id="scale" min="0" max="100" step="1" value="0">
+      <div class="scale-ends"><span>treino constante</span><span>véspera de show</span></div>
+    </div>
+
     <ol id="list"></ol>
     <p class="empty" id="empty">Nenhuma música encontrada.</p>
 
@@ -453,12 +518,9 @@
       location.href = u.toString();
     };
 
-    // REAL_TODAY = data de verdade (usada pra GRAVAR); TODAY = data vista (com o offset da simulação).
-    // Escrever sempre com REAL_TODAY garante que simular nunca corrompe os dados.
-    const REAL_TODAY = new Date(); REAL_TODAY.setHours(0, 0, 0, 0);
-    const TODAY = new Date(REAL_TODAY);
+    const SIM_MS = SIM_DAYS * 86400000;
+    const nowMs = () => Date.now() + SIM_MS;   // "agora" — deslocado pela simulação, se houver
     if (SIM_DAYS) {
-      TODAY.setDate(TODAY.getDate() + SIM_DAYS);
       const badge = document.createElement("div");
       badge.textContent = "⏱ simulando +" + SIM_DAYS + " dias — clique pra sair";
       badge.style.cssText =
@@ -468,29 +530,36 @@
       badge.onclick = () => window.simular(0);
       document.body.appendChild(badge);
     }
-    const ymd = (d) =>
-      d.getFullYear() + "-" +
-      String(d.getMonth() + 1).padStart(2, "0") + "-" +
-      String(d.getDate()).padStart(2, "0");
-    const todayStr = () => ymd(REAL_TODAY);
-    function daysSince(str) {
-      const [y, m, d] = str.split("-").map(Number);
-      const dt = new Date(y, m - 1, d); dt.setHours(0, 0, 0, 0);
-      return Math.round((TODAY - dt) / 86400000);
+
+    // last é gravado em ms (Date.now); o formato antigo "YYYY-MM-DD" ainda é lido
+    function lastMs(entry) {
+      const v = entry.last;
+      if (typeof v === "number") return v;
+      const [y, m, d] = String(v).split("-").map(Number);
+      return new Date(y, m - 1, d).getTime();
     }
-    function agoText(str) {
-      const d = daysSince(str);
-      if (d <= 0) return "hoje";
-      if (d === 1) return "ontem";
-      return "há " + d + " dias";
+    function elapsedDays(entry) {
+      return Math.max(0, (nowMs() - lastMs(entry)) / 86400000);
     }
+    function agoText(entry) {
+      const days = elapsedDays(entry);
+      if (days < 1 / 24) return "agora";
+      if (days < 1) return "há " + Math.round(days * 24) + "h";
+      const d = Math.round(days);
+      return d === 1 ? "ontem" : "há " + d + " dias";
+    }
+
+    // escala de tempo: acelera o decaimento proporcionalmente (1 = padrão, longo prazo)
+    const SPEED_KEY = "cbjr-setlist-speed";
+    const MAX_SPEED = 240;               // extremo: sólida (60d) decai como se durasse ~6h
+    let speed = parseFloat(localStorage.getItem(SPEED_KEY)) || 1;
 
     // ---- saúde ----
     // retorna 0..100, ou null se nunca praticada
     function health(entry) {
       if (!entry) return null;
-      const hl = HALF_LIFE[entry.rating] || 14;
-      const h = 100 * Math.pow(0.5, daysSince(entry.last) / hl);
+      const hl = (HALF_LIFE[entry.rating] || 14) / speed;
+      const h = 100 * Math.pow(0.5, elapsedDays(entry) / hl);
       return Math.max(0, Math.min(100, h)); // nunca abaixo de 0 nem acima de 100
     }
     function healthClass(h) {
@@ -545,9 +614,9 @@
       const dot = li.querySelector(".health");
       dot.className = "health " + healthClass(h);
       dot.title = entry
-        ? RATING_LABEL[entry.rating] + " · " + agoText(entry.last)
+        ? RATING_LABEL[entry.rating] + " · " + agoText(entry)
         : "Ainda não praticada — toque pra registrar";
-      li.querySelector(".ago").textContent = entry ? agoText(entry.last) : "nova";
+      li.querySelector(".ago").textContent = entry ? agoText(entry) : "nova";
       li.dataset.health = h == null ? -1 : h;
     }
 
@@ -574,7 +643,7 @@
         if (!currentName) return;
         const r = btn.dataset.r;
         if (r === "clear") delete store[currentName];
-        else store[currentName] = { rating: r, last: todayStr() };
+        else store[currentName] = { rating: r, last: Date.now() };
         save();
         if (currentLi) applyRowState(currentLi);
         updateSummary();
@@ -629,6 +698,38 @@
         sortMode = chip.dataset.sort;
         sortList();
       });
+    });
+
+    // ---- escala de tempo (slider) ----
+    const scaleEl = document.getElementById("scale");
+    const scaleInfoEl = document.getElementById("scaleInfo");
+    const humanDur = (days) => {
+      if (days < 1) {
+        const h = days * 24;
+        return h < 1 ? Math.round(h * 60) + "min" : Math.round(h) + "h";
+      }
+      if (days < 45) return Math.round(days) + " dias";
+      return Math.round(days / 30) + " meses";
+    };
+    // tempo até uma música sair do verde (cair abaixo de 60%), por avaliação
+    const greenFor = (rating) =>
+      ((HALF_LIFE[rating] || 14) / speed) * Math.log(100 / 60) / Math.log(2);
+    function updateScaleInfo() {
+      scaleInfoEl.textContent =
+        "verde por ~ 😎 " + humanDur(greenFor("solid")) +
+        " · 🙂 " + humanDur(greenFor("ok")) +
+        " · 😬 " + humanDur(greenFor("shaky"));
+    }
+    // posição inicial do slider a partir do speed salvo
+    scaleEl.value = Math.round(100 * Math.log(speed) / Math.log(MAX_SPEED));
+    updateScaleInfo();
+    scaleEl.addEventListener("input", () => {
+      speed = Math.pow(MAX_SPEED, scaleEl.value / 100);
+      localStorage.setItem(SPEED_KEY, speed);
+      list.querySelectorAll("li").forEach(applyRowState);
+      updateSummary();
+      updateScaleInfo();
+      if (sortMode === "priority") sortList();
     });
 
     // ---- busca ----
