@@ -1,1 +1,1 @@
-{"root":["./src/app.tsx","./src/main.tsx","./src/vite-env.d.ts","./src/test/setup.ts"],"version":"5.9.3"}
+{"root":["./src/app.test.tsx","./src/app.tsx","./src/main.tsx","./src/types.ts","./src/vite-env.d.ts","./src/data/defaultsetlist.ts","./src/lib/health.test.ts","./src/lib/health.ts","./src/lib/id.ts","./src/lib/songsterr.ts","./src/lib/storage.test.ts","./src/lib/storage.ts","./src/lib/time.test.ts","./src/lib/time.ts","./src/test/setup.ts"],"version":"5.9.3"}
