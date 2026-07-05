@@ -7,6 +7,7 @@ export type Action =
   | { type: 'resetPractice' }
   | { type: 'addSetlist'; id: string; name: string }
   | { type: 'renameSetlist'; id: string; name: string }
+  | { type: 'setShowDate'; id: string; date: string | undefined }
   | { type: 'deleteSetlist'; id: string }
   | { type: 'setActiveSetlist'; id: string }
   | { type: 'addSong'; setlistId: string; song: Song }
@@ -53,6 +54,14 @@ export function reducer(state: AppState, action: Action): AppState {
         ...state,
         setlists: state.setlists.map((s) =>
           s.id === action.id ? { ...s, name: action.name } : s,
+        ),
+      }
+
+    case 'setShowDate':
+      return {
+        ...state,
+        setlists: state.setlists.map((s) =>
+          s.id === action.id ? { ...s, showDate: action.date } : s,
         ),
       }
 

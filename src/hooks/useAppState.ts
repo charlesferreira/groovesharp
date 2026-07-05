@@ -23,6 +23,8 @@ export function useAppState() {
 
       addSetlist: (name: string) => dispatch({ type: 'addSetlist', id: uid('sl_'), name }),
       renameSetlist: (id: string, name: string) => dispatch({ type: 'renameSetlist', id, name }),
+      setShowDate: (id: string, date: string | undefined) =>
+        dispatch({ type: 'setShowDate', id, date }),
       deleteSetlist: (id: string) => dispatch({ type: 'deleteSetlist', id }),
       setActiveSetlist: (id: string) => dispatch({ type: 'setActiveSetlist', id }),
 

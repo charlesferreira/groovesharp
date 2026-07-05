@@ -6,12 +6,14 @@ import { Modal } from './components/Modal'
 import { RatePopover } from './components/RatePopover'
 import { SetlistSwitcher } from './components/SetlistSwitcher'
 import { SettingsPanel } from './components/SettingsPanel'
+import { ShowCard } from './components/ShowCard'
 import { SimBadge } from './components/SimBadge'
 import { SongEditor, type SongFormData } from './components/SongEditor'
 import { SongList } from './components/SongList'
 import { Toolbar } from './components/Toolbar'
 import { useAppState } from './hooks/useAppState'
 import { buildRows, filterRows, sortRows, summarize, type SortMode } from './lib/setlist'
+import { showReadiness } from './lib/show'
 import type { Rating, Song } from './types'
 
 const DAY = 86_400_000
@@ -110,6 +112,10 @@ export default function App() {
 
   const defaultArtist = activeSetlist.songs[0]?.artist ?? ''
 
+  const readiness = activeSetlist.showDate
+    ? showReadiness(activeSetlist.songs, state.practice, activeSetlist.showDate)
+    : null
+
   return (
     <>
       <SettingsPanel
@@ -148,6 +154,15 @@ export default function App() {
         />
 
         <HealthMeter ref={meterRef} avg={summary.avg} attention={summary.attention} />
+
+        <ShowCard
+          showDate={activeSetlist.showDate}
+          nowMs={nowMs}
+          readinessAvg={readiness?.avg ?? 0}
+          atRiskNames={readiness?.atRisk.map((r) => r.song.title) ?? []}
+          onSetDate={(date) => actions.setShowDate(activeSetlist.id, date)}
+          onClear={() => actions.setShowDate(activeSetlist.id, undefined)}
+        />
 
         <SongList
           rows={displayed}

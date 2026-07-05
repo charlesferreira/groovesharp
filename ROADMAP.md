@@ -25,7 +25,7 @@ instalável no celular (PWA) e publicada no GitHub Pages.
   do protótipo. (Estado num reducer testado; seletor de setlist + modo edição.)
 - [x] **F2 — Dados por música**: tom, BPM, afinação/capo, anotações e vários
   links (Songsterr, YouTube, cifra). Tela/painel de detalhe da música.
-- [ ] **F3 — Prontidão pro show**: data do próximo show, contagem regressiva,
+- [x] **F3 — Prontidão pro show**: data do próximo show, contagem regressiva,
   score de prontidão e plano de treino (o que priorizar a cada dia).
 - [ ] **F4 — Modo palco**: tela cheia pro show (ordem, avançar músicas, tempo
   total, info da música, autoscroll).
