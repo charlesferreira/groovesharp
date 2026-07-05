@@ -31,7 +31,7 @@ instalável no celular (PWA) e publicada no GitHub Pages.
   total, info da música, autoscroll).
 - [x] **F5 — PWA + deploy**: manifest, ícones, offline; publicado no GitHub Pages
   em https://charlesferreira.github.io/groovesharp/ (deploy automático via Actions).
-- [ ] **F6 — Backup**: export/import dos dados (JSON) para não perder nada e
+- [x] **F6 — Backup**: export/import dos dados (JSON) para não perder nada e
   passar entre dispositivos.
 
 ## Ideias futuras (além do mês)

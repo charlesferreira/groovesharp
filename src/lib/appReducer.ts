@@ -1,6 +1,7 @@
 import type { AppState, Rating, Song } from '../types'
 
 export type Action =
+  | { type: 'replaceState'; state: AppState }
   | { type: 'rate'; songId: string; rating: Rating; now: number }
   | { type: 'clearRating'; songId: string }
   | { type: 'setSpeed'; speed: number }
@@ -29,6 +30,9 @@ function withoutKeys(practice: AppState['practice'], ids: string[]): AppState['p
 
 export function reducer(state: AppState, action: Action): AppState {
   switch (action.type) {
+    case 'replaceState':
+      return action.state
+
     case 'rate':
       return {
         ...state,

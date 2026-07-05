@@ -11,6 +11,8 @@ interface SettingsPanelProps {
   onSpeedChange: (speed: number) => void
   simDays: number
   onSimChange: (days: number) => void
+  onExport: () => void
+  onImport: (file: File) => void
 }
 
 export function SettingsPanel({
@@ -20,6 +22,8 @@ export function SettingsPanel({
   onSpeedChange,
   simDays,
   onSimChange,
+  onExport,
+  onImport,
 }: SettingsPanelProps) {
   const rootRef = useRef<HTMLDivElement>(null)
 
@@ -88,6 +92,28 @@ export function SettingsPanel({
               leftEnd="hoje"
               rightEnd="+30 dias"
             />
+          </div>
+
+          <div className={styles.section}>
+            <h3 className={styles.h3}>Backup</h3>
+            <div className={styles.backupRow}>
+              <button className={styles.backupBtn} onClick={onExport}>
+                Exportar
+              </button>
+              <label className={styles.backupBtn}>
+                Importar
+                <input
+                  type="file"
+                  accept="application/json"
+                  style={{ display: 'none' }}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0]
+                    if (file) onImport(file)
+                    e.target.value = ''
+                  }}
+                />
+              </label>
+            </div>
           </div>
         </div>
       )}

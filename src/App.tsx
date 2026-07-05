@@ -12,6 +12,7 @@ import { SongEditor, type SongFormData } from './components/SongEditor'
 import { SongList } from './components/SongList'
 import { Toolbar } from './components/Toolbar'
 import { useAppState } from './hooks/useAppState'
+import { downloadBackup, parseBackup } from './lib/backup'
 import { buildRows, filterRows, sortRows, summarize, type SortMode } from './lib/setlist'
 import { showReadiness } from './lib/show'
 import type { Rating, Song } from './types'
@@ -110,6 +111,22 @@ export default function App() {
     setEditor(null)
   }
 
+  function handleImport(file: File) {
+    file
+      .text()
+      .then((text) => {
+        const parsed = parseBackup(text)
+        if (!parsed) {
+          alert('Arquivo de backup inválido.')
+          return
+        }
+        if (confirm('Importar vai substituir todos os dados atuais. Continuar?')) {
+          actions.replaceState(parsed)
+        }
+      })
+      .catch(() => alert('Não foi possível ler o arquivo.'))
+  }
+
   const defaultArtist = activeSetlist.songs[0]?.artist ?? ''
 
   const readiness = activeSetlist.showDate
@@ -125,6 +142,8 @@ export default function App() {
         onSpeedChange={actions.setSpeed}
         simDays={simDays}
         onSimChange={setSimDays}
+        onExport={() => downloadBackup(state)}
+        onImport={handleImport}
       />
 
       <div className={styles.wrap}>

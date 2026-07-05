@@ -2,7 +2,7 @@ import { useEffect, useMemo, useReducer } from 'react'
 import { reducer } from '../lib/appReducer'
 import { uid } from '../lib/id'
 import { loadState, saveState } from '../lib/storage'
-import type { Rating, Song } from '../types'
+import type { AppState, Rating, Song } from '../types'
 
 /** Estado do app + ações, com persistência automática no localStorage. */
 export function useAppState() {
@@ -20,6 +20,7 @@ export function useAppState() {
       clearRating: (songId: string) => dispatch({ type: 'clearRating', songId }),
       setSpeed: (speed: number) => dispatch({ type: 'setSpeed', speed }),
       resetPractice: () => dispatch({ type: 'resetPractice' }),
+      replaceState: (next: AppState) => dispatch({ type: 'replaceState', state: next }),
 
       addSetlist: (name: string) => dispatch({ type: 'addSetlist', id: uid('sl_'), name }),
       renameSetlist: (id: string, name: string) => dispatch({ type: 'renameSetlist', id, name }),
