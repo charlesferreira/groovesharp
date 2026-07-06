@@ -34,9 +34,22 @@ instalável no celular (PWA) e publicada no GitHub Pages.
 - [x] **F6 — Backup**: export/import dos dados (JSON) para não perder nada e
   passar entre dispositivos.
 
+## Épico: backend + bandas (em andamento, branch `feat/bands`)
+
+Ver [ADR 0001](docs/adr/0001-backend-e-bandas.md) e [setup](docs/SUPABASE_SETUP.md).
+
+- [x] **B0 — Fundação do backend**: schema + RLS no Supabase (bandas, membros,
+  convites, repertório, prática por usuário), validado de ponta a ponta.
+- [x] **B1 — Casca + login**: abas (Praticar/Banda/Perfil), login opcional
+  (Google/e-mail); modo local preservado quando sem backend.
+- [ ] **B2 — Dados na nuvem**: camada de repositório, prática por usuário, realtime,
+  updates otimistas/offline; migração dos dados locais no primeiro login.
+- [ ] **B3 — Bandas**: criar/entrar (convite), repertório compartilhado, membros,
+  papéis, instrumentos.
+- [ ] **B4 — Social**: heatmap da banda, prontidão coletiva pro show, feed de atividade.
+- [ ] **Provisionar nuvem**: criar projeto Supabase, OAuth do Google, variáveis no deploy.
+
 ## Ideias futuras (além do mês)
 
-- Sincronização real entre dispositivos (exigiria backend).
 - Histórico de treinos / heatmap de calendário / streaks.
-- Metrônomo e afinador embutidos.
-- Compartilhar setlist com a banda.
+- Metrônomo, afinador, playback e tablatura integrada.
