@@ -163,6 +163,16 @@ create trigger band_members_guard_role
 before update on public.band_members
 for each row execute function public.guard_member_role();
 
+-- criar banda (insere e retorna numa chamada; membership vem pelo trigger)
+create or replace function public.create_band(_name text)
+returns public.bands language plpgsql security definer set search_path = public as $$
+declare
+  b public.bands;
+begin
+  insert into public.bands (name, created_by) values (_name, auth.uid()) returning * into b;
+  return b;
+end; $$;
+
 -- aceitar convite por token (entra na banda)
 create or replace function public.accept_invite(_token text)
 returns uuid language plpgsql security definer set search_path = public as $$
@@ -177,6 +187,14 @@ begin
   on conflict (band_id, user_id) do nothing;
   return inv.band_id;
 end; $$;
+
+-- ---------- grants (base) ----------
+-- Os papéis anon/authenticated precisam do acesso base às tabelas; a RLS abaixo é
+-- que faz o controle fino de quem vê/edita o quê.
+grant usage on schema public to anon, authenticated;
+grant select, insert, update, delete on all tables in schema public to anon, authenticated;
+grant usage, select on all sequences in schema public to anon, authenticated;
+grant execute on all functions in schema public to anon, authenticated;
 
 -- ---------- RLS ----------
 alter table public.profiles enable row level security;
