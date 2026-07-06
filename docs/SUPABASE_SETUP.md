@@ -24,6 +24,18 @@ VITE_SUPABASE_ANON_KEY=<anon key local>
 
 Para resetar o banco local e reaplicar migrations: `npx supabase db reset`.
 
+### Dicas / perrengues locais
+
+- **Node 22+**: o `@supabase/realtime-js` precisa de WebSocket nativo. Com Node 20 dá
+  erro; use Node 22+ (ex.: `nvm use 22`).
+- **502 após `db reset`**: às vezes o gateway perde a rota pro auth. Resolve com
+  `docker restart supabase_kong_music supabase_auth_music` e aguardar o
+  `/auth/v1/health` voltar 200.
+- **Criar banda**: use a RPC `create_band` (retorna a banda numa chamada). Um
+  `insert().select()` direto falha no RETURNING, porque a associação do criador é
+  adicionada por trigger e ainda não está visível pra política de SELECT no mesmo
+  statement.
+
 ## Produção (nuvem) — o que o Charles precisa fazer
 
 1. **Criar o projeto** em https://supabase.com (região mais perto, ex.: São Paulo).
