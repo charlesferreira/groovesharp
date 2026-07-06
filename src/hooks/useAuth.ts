@@ -8,6 +8,7 @@ export interface AuthState {
   loading: boolean
   signInWithGoogle: () => Promise<unknown>
   signInWithEmail: (email: string, password: string) => Promise<unknown>
+  signUpWithEmail: (email: string, password: string) => Promise<unknown>
   signOut: () => Promise<unknown>
 }
 
@@ -40,6 +41,8 @@ export function useAuth(): AuthState {
       }) ?? Promise.resolve(),
     signInWithEmail: (email, password) =>
       supabase?.auth.signInWithPassword({ email, password }) ?? Promise.resolve(),
+    signUpWithEmail: (email, password) =>
+      supabase?.auth.signUp({ email, password }) ?? Promise.resolve(),
     signOut: () => supabase?.auth.signOut() ?? Promise.resolve(),
   }
 }
