@@ -15,7 +15,9 @@ function loadSpeed(): number {
 type Practice = AppState['practice']
 
 /** Estado da tela de prática ligado ao Supabase (repertório da banda + prática pessoal). */
-export function useCloudState(userId: string): AppStore {
+export function useCloudState(
+  userId: string,
+): AppStore & { bandId: string | null; reload: () => void } {
   const [bandId, setBandId] = useState<string | null>(null)
   const [setlists, setSetlists] = useState<Setlist[]>([])
   const [practice, setPractice] = useState<Practice>({})
@@ -194,10 +196,15 @@ export function useCloudState(userId: string): AppStore {
     [mutate, run, setlists, userId],
   )
 
+  const reload = useCallback(() => {
+    const id = bandIdRef.current
+    if (id) refetch(id).catch(() => {})
+  }, [refetch])
+
   const state = useMemo<AppState>(
     () => ({ version: 1, setlists, activeSetlistId, practice, speed }),
     [setlists, activeSetlistId, practice, speed],
   )
 
-  return { state, ...actions }
+  return { state, ...actions, bandId, reload }
 }

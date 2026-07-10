@@ -42,7 +42,7 @@ Ver [ADR 0001](docs/adr/0001-backend-e-bandas.md) e [setup](docs/SUPABASE_SETUP.
   convites, repertório, prática por usuário), validado de ponta a ponta.
 - [x] **B1 — Casca + login**: abas (Praticar/Banda/Perfil), login opcional
   (Google/e-mail); modo local preservado quando sem backend.
-- [ ] **B2 — Dados na nuvem**: camada de repositório, prática por usuário, realtime,
+- [x] **B2 — Dados na nuvem**: camada de repositório, prática por usuário, realtime,
   updates otimistas/offline; migração dos dados locais no primeiro login.
 - [ ] **B3 — Bandas**: criar/entrar (convite), repertório compartilhado, membros,
   papéis, instrumentos.

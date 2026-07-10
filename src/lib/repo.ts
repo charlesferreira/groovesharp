@@ -1,4 +1,4 @@
-import type { Rating, Setlist, Song } from '../types'
+import type { AppState, Rating, Setlist, Song } from '../types'
 import { mapPractice, mapSetlists } from './cloudMap'
 import type { Json } from './database.types'
 import { supabase } from './supabase'
@@ -163,14 +163,19 @@ export async function removeSong(songId: string): Promise<void> {
 }
 
 // ---------- prática ----------
-export async function ratePractice(songId: string, rating: Rating, userId: string): Promise<void> {
+export async function ratePractice(
+  songId: string,
+  rating: Rating,
+  userId: string,
+  at?: number,
+): Promise<void> {
   const { error } = await client()
     .from('practice_entries')
     .upsert({
       user_id: userId,
       song_id: songId,
       rating,
-      last_practiced_at: new Date().toISOString(),
+      last_practiced_at: new Date(at ?? Date.now()).toISOString(),
     })
   if (error) throw error
 }
@@ -182,6 +187,37 @@ export async function clearPractice(songId: string, userId: string): Promise<voi
     .eq('user_id', userId)
     .eq('song_id', songId)
   if (error) throw error
+}
+
+/** Importa setlists, músicas e prática do modo local para uma banda na nuvem. */
+export async function importLocalData(
+  bandId: string,
+  local: AppState,
+  userId: string,
+): Promise<void> {
+  for (const setlist of local.setlists) {
+    const setlistId = await addSetlist(bandId, setlist.name)
+    if (setlist.showDate) await setShowDate(setlistId, setlist.showDate)
+    for (const song of setlist.songs) {
+      const newId = await addSong(
+        bandId,
+        setlistId,
+        {
+          title: song.title,
+          artist: song.artist,
+          duration: song.duration,
+          key: song.key,
+          bpm: song.bpm,
+          tuning: song.tuning,
+          notes: song.notes,
+          links: song.links,
+        },
+        userId,
+      )
+      const entry = local.practice[song.id]
+      if (entry) await ratePractice(newId, entry.rating, userId, entry.last)
+    }
+  }
 }
 
 /** Zera a prática do usuário para um conjunto de músicas (ex.: as da banda ativa). */

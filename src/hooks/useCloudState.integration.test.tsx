@@ -1,7 +1,9 @@
 import { createClient } from '@supabase/supabase-js'
 import { act, renderHook, waitFor } from '@testing-library/react'
 import { beforeAll, expect, test } from 'vitest'
+import { createBand, getBandData, importLocalData } from '../lib/repo'
 import { supabase } from '../lib/supabase'
+import type { AppState } from '../types'
 import { useCloudState } from './useCloudState'
 
 // Requer o Supabase local rodando (npx supabase start) e Node 22+.
@@ -43,3 +45,23 @@ test('cria banda default, adiciona música e registra prática (fim a fim)', asy
     timeout: 15000,
   })
 })
+
+test('importLocalData copia setlists, músicas e prática pra uma banda', async () => {
+  const band = await createBand('Import Test')
+  const local: AppState = {
+    version: 1,
+    activeSetlistId: 'x',
+    speed: 1,
+    setlists: [
+      { id: 'sl', name: 'Meu Set', songs: [{ id: 's1', title: 'Alfa', artist: 'A', duration: '2:00' }] },
+    ],
+    practice: { s1: { rating: 'ok', last: Date.parse('2026-01-01T00:00:00Z') } },
+  }
+  await importLocalData(band.id, local, userId)
+
+  const data = await getBandData(band.id, userId)
+  const set = data.setlists.find((s) => s.name === 'Meu Set')!
+  expect(set.songs[0].title).toBe('Alfa')
+  expect(data.practice[set.songs[0].id].rating).toBe('ok')
+})
+
