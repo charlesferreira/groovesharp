@@ -312,6 +312,21 @@ export type Database = {
         Args: { _owner: string; _song: string }
         Returns: boolean
       }
+      create_band: {
+        Args: { _name: string }
+        Returns: {
+          created_at: string
+          created_by: string
+          id: string
+          name: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "bands"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       is_band_admin: { Args: { _band: string }; Returns: boolean }
       is_band_member: { Args: { _band: string }; Returns: boolean }
     }
