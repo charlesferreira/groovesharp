@@ -4,3 +4,6 @@ dist-ssr
 *.local
 .DS_Store
 coverage
+
+# artefato de build do TypeScript
+tsconfig.tsbuildinfo
