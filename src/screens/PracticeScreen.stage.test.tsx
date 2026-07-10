@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, expect, test } from 'vitest'
-import { PracticeScreen as App } from './PracticeScreen'
+import { LocalPractice as App } from './LocalPractice'
 
 beforeEach(() => localStorage.clear())
 

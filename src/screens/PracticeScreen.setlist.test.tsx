@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, expect, test, vi } from 'vitest'
-import { PracticeScreen as App } from './PracticeScreen'
+import { LocalPractice as App } from './LocalPractice'
 
 beforeEach(() => localStorage.clear())
 afterEach(() => vi.restoreAllMocks())

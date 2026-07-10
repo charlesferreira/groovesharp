@@ -183,3 +183,14 @@ export async function clearPractice(songId: string, userId: string): Promise<voi
     .eq('song_id', songId)
   if (error) throw error
 }
+
+/** Zera a prática do usuário para um conjunto de músicas (ex.: as da banda ativa). */
+export async function resetPractice(songIds: string[], userId: string): Promise<void> {
+  if (songIds.length === 0) return
+  const { error } = await client()
+    .from('practice_entries')
+    .delete()
+    .eq('user_id', userId)
+    .in('song_id', songIds)
+  if (error) throw error
+}

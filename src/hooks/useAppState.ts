@@ -3,9 +3,10 @@ import { reducer } from '../lib/appReducer'
 import { uid } from '../lib/id'
 import { loadState, saveState } from '../lib/storage'
 import type { AppState, Rating, Song } from '../types'
+import type { AppStore } from './store'
 
 /** Estado do app + ações, com persistência automática no localStorage. */
-export function useAppState() {
+export function useAppState(): AppStore {
   const [state, dispatch] = useReducer(reducer, undefined, loadState)
 
   useEffect(() => {

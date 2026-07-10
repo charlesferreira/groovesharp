@@ -11,7 +11,7 @@ import { SongEditor, type SongFormData } from '../components/SongEditor'
 import { SongList } from '../components/SongList'
 import { StageMode } from '../components/StageMode'
 import { Toolbar } from '../components/Toolbar'
-import { useAppState } from '../hooks/useAppState'
+import type { AppStore } from '../hooks/store'
 import { downloadBackup, parseBackup } from '../lib/backup'
 import { buildRows, filterRows, sortRows, summarize, type SortMode } from '../lib/setlist'
 import { showReadiness } from '../lib/show'
@@ -27,8 +27,8 @@ interface PopoverState {
 
 type EditorState = { mode: 'add' } | { mode: 'edit'; song: Song } | null
 
-export function PracticeScreen() {
-  const { state, ...actions } = useAppState()
+export function PracticeScreen({ store }: { store: AppStore }) {
+  const { state, ...actions } = store
 
   const [search, setSearch] = useState('')
   const [sortMode, setSortMode] = useState<SortMode>('setlist')
